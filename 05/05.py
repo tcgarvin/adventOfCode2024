@@ -38,48 +38,24 @@ def solve_part_2(ordering_rules: list[list[int]], updates: list[list[int]]):
     for update in updates:
         update_page_set = set(update)
 
-        correct_order = True
-        for ordering_rule in ordering_rules:
-            if (
-                update_page_set.issuperset(ordering_rule) 
-                and update.index(ordering_rule[0]) > update.index(ordering_rule[1])
-            ):
-                correct_order = False
-                break
+        correct_original_order = True
+        correct_current_order = None
+        while correct_current_order is not True:
+            correct_current_order = True
+            for ordering_rule in ordering_rules:
+                if (
+                    update_page_set.issuperset(ordering_rule) 
+                    and update.index(ordering_rule[0]) > update.index(ordering_rule[1])
+                ):
+                    correct_original_order = False
+                    correct_current_order = False
+                    a = update.index(ordering_rule[0])
+                    b = update.index(ordering_rule[1])
+                    update[a], update[b] = update[b], update[a]
+                    break
 
-        if correct_order:
-            continue
-
-        order_rule_numbers = set()
-        relevant_ordering_rules = []
-        for ordering_rule in ordering_rules:
-            if update_page_set.issuperset(ordering_rule):
-                order_rule_numbers.update(ordering_rule)
-                relevant_ordering_rules.append(ordering_rule)
-
-        assert order_rule_numbers == update_page_set
-
-        # If we assume that the ordering rules must cover enough information to
-        # get halfway through the update, we should be OK.
-
-        # Thought. The lowest number should not by on the right side of any relevant rule.
-        ordered_update = []
-        unordered_pages = set(update_page_set)
-        while len(ordered_update) < (len(update) // 2) + 1:
-            numbers_above = set(x[1] for x in relevant_ordering_rules)
-            numbers_below = unordered_pages - numbers_above
-            if len(numbers_below) != 1:
-                print("Update:", update)
-                print("Rules:", relevant_ordering_rules)
-                print(numbers_above)
-                raise Exception("Expected one number below, but got: ", numbers_below)
-
-            next_number = numbers_below.pop()
-            ordered_update.append(next_number)
-
-            relevant_ordering_rules = [o for o in relevant_ordering_rules if next_number not in o]
-        
-        total += ordered_update[len(ordered_update) // 2]
+        if not correct_original_order:
+            total += update[len(update) // 2]
 
     return total
 

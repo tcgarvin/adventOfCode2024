@@ -49,8 +49,19 @@ class Grid:
     def __getitem__(self, key: Vector):
         return self.grid.get(key, self.out_of_bounds)
 
+    def __setitem__(self, key: Vector, value):
+        self.grid[key] = value
+
     def all_locations(self) -> Iterable[Vector]:
         return self.grid.keys()
+
+    def find(self, value) -> Iterable[Vector]:
+        return (location for location, cell in self.grid.items() if cell == value)
+
+    def find_one(self, value) -> Vector:
+        found_locations = list(self.find(value))
+        assert len(found_locations) == 1
+        return found_locations[0]
 
 def grid_from_input_txt(ascii_grid:str, out_of_bounds=".") -> Grid:
     """

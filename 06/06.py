@@ -42,8 +42,17 @@ def solve_part_1(grid: Grid):
     return len(list(grid.find("X")))
 
 def solve_part_2(grid:Grid):
+    loop_count = 0
+    for i, modification_location in enumerate(grid.find(".")):
+        grid[modification_location] = "#"
+        status = traverse(grid)
+        if status == "loop":
+            loop_count += 1
+        grid[modification_location] = "."
+        if i % 100 == 0:
+            print(f"Progress: {i}")
 
-    return ""
+    return loop_count
 
 if __name__ == "__main__":
     answer_1 = solve_part_1(get_puzzle_input())

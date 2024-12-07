@@ -1,11 +1,15 @@
 from itertools import cycle
+from time import time
+
 from rich import print
 
 from grid import Grid, Vector, grid_from_input_txt, NORTH, EAST, SOUTH, WEST
 
 
 def get_puzzle_input():
-    with open("input.txt") as input_txt:
+    input_filename = "input.txt"
+    #input_filename = "example.txt"
+    with open(input_filename) as input_txt:
         return grid_from_input_txt(input_txt.read(), "O")
 
 def guard_status(grid:Grid, location, direction, starting_location, starting_direction):
@@ -16,22 +20,29 @@ def guard_status(grid:Grid, location, direction, starting_location, starting_dir
     return "live"
 
 def traverse(grid:Grid, mark=None):
-    starting_location = grid.find_one("^")
-    rotation = cycle([NORTH, EAST, SOUTH, WEST])  # Note, Starting with NORTH
-    starting_direction = next(rotation)
+    location_direction_seen = set()
+    def guard_status(location, direction):
+        if grid[location] == "O":
+            return "off-grid"
+        location_direction = (location, direction)
+        if location_direction in location_direction_seen:
+            return "loop"
+        location_direction_seen.add(location_direction)
+        return "live"
 
-    location = starting_location
-    direction = starting_direction
+    location = grid.find_one("^")
+    rotation = cycle([NORTH, EAST, SOUTH, WEST])  # Note, Starting with NORTH
+    direction = next(rotation)
     status = "live"
     while status == "live":
         if mark is not None:
             grid[location] = mark
-        if grid[location + direction] == "#":
+        while grid[location + direction] == "#":
             direction = next(rotation)
-            status = guard_status(grid, location, direction, starting_location, starting_direction)
+            status = guard_status(location, direction)
 
         location += direction
-        status = guard_status(grid, location, direction, starting_location, starting_direction)
+        status = guard_status(location, direction)
 
     return status
 
@@ -42,15 +53,19 @@ def solve_part_1(grid: Grid):
     return len(list(grid.find("X")))
 
 def solve_part_2(grid:Grid):
+    start_time = time()
     loop_count = 0
-    for i, modification_location in enumerate(grid.find(".")):
+    for i, modification_location in enumerate(list(grid.find("."))):
+
         grid[modification_location] = "#"
         status = traverse(grid)
         if status == "loop":
             loop_count += 1
         grid[modification_location] = "."
         if i % 100 == 0:
-            print(f"Progress: {i}")
+            print(f"Progress: {i} ({loop_count} found)")
+
+    print(f"Elapsed time: {time() - start_time}")
 
     return loop_count
 

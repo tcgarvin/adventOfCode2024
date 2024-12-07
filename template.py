@@ -2,9 +2,7 @@ import argparse
 from rich import print
 
 def get_puzzle_input(use_example=False):
-    input_filename = "input.txt"
-    if use_example:
-        input_filename = "example.txt"
+    input_filename = "example.txt" if use_example else "input.txt"
     puzzle_input = []
     with open(input_filename) as input_txt:
         for line in input_txt:

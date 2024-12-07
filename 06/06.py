@@ -13,16 +13,9 @@ def get_puzzle_input():
     with open(input_filename) as input_txt:
         return grid_from_input_txt(input_txt.read(), "O")
 
-def guard_status(grid:Grid, location, direction, starting_location, starting_direction):
-    if grid[location] == "O":
-        return "off-grid"
-    if location == starting_location and direction == starting_direction:
-        return "loop"
-    return "live"
-
 def traverse(grid:Grid, mark=None):
     location_direction_seen = set()
-    def guard_status(location, direction):
+    def guard_status(location:Vector, direction:Vector):
         if grid[location] == "O":
             return "off-grid"
         location_direction = (location, direction)
@@ -61,7 +54,6 @@ def solve_part_2(grid:Grid, candidate_locations):
         TaskProgressColumn(),
         TimeElapsedColumn(),
         MofNCompleteColumn(),
-        #TimeRemainingColumn(),
         TextColumn("Loop Count: {task.fields[loop_count]}"),
     ) as progress:
         task = progress.add_task("Searching", total=len(candidate_locations), loop_count=loop_count)

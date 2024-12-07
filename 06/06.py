@@ -2,6 +2,7 @@ from itertools import cycle
 from time import time
 
 from rich import print
+from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn, MofNCompleteColumn
 
 from grid import Grid, Vector, grid_from_input_txt, NORTH, EAST, SOUTH, WEST
 
@@ -50,28 +51,35 @@ def solve_part_1(grid: Grid):
     traverse(grid, mark="X")
 
     print(len(grid.grid))
-    return len(list(grid.find("X")))
+    return len(list(grid.find("X"))), list(grid.find("X"))
 
-def solve_part_2(grid:Grid):
-    start_time = time()
+def solve_part_2(grid:Grid, candidate_locations):
     loop_count = 0
-    for i, modification_location in enumerate(list(grid.find("."))):
-
-        grid[modification_location] = "#"
-        status = traverse(grid)
-        if status == "loop":
-            loop_count += 1
-        grid[modification_location] = "."
-        if i % 100 == 0:
-            print(f"Progress: {i} ({loop_count} found)")
-
-    print(f"Elapsed time: {time() - start_time}")
+    with Progress(
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TaskProgressColumn(),
+        TimeElapsedColumn(),
+        MofNCompleteColumn(),
+        #TimeRemainingColumn(),
+        TextColumn("Loop Count: {task.fields[loop_count]}"),
+    ) as progress:
+        task = progress.add_task("Searching", total=len(candidate_locations), loop_count=loop_count)
+        for modification_location in candidate_locations:
+            if grid[modification_location] == "^":
+                continue
+            grid[modification_location] = "#"
+            status = traverse(grid)
+            if status == "loop":
+                loop_count += 1
+            grid[modification_location] = "."
+            progress.update(task, advance=1, loop_count=loop_count)
 
     return loop_count
 
 if __name__ == "__main__":
-    answer_1 = solve_part_1(get_puzzle_input())
+    answer_1, x_locations = solve_part_1(get_puzzle_input())
     print(f"Part 1: {answer_1}")
 
-    answer_2 = solve_part_2(get_puzzle_input())
+    answer_2 = solve_part_2(get_puzzle_input(), x_locations)
     print(f"Part 2: {answer_2}")

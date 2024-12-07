@@ -13,19 +13,9 @@ def get_puzzle_input(use_example=False):
             puzzle_input.append((test_value, component_numbers))
     return puzzle_input
 
-def mul(args):
-    """Like sum, but multiplies."""
-    result = 1
-    for arg in args:
-        result *= arg
-    return result
-
 def is_possible(numbers, target, use_concat=False):
-    if len(numbers) == 1 and numbers[0] == target:
-        return True
-
-    elif len(numbers) == 1:
-        return False
+    if len(numbers) == 1:
+        return numbers[0] == target
 
     elif numbers[0] > target:
         return False
@@ -51,9 +41,6 @@ def is_possible(numbers, target, use_concat=False):
 def solve_part_1(puzzle_input):
     total = 0
     for test_value, component_numbers in puzzle_input:
-        #if sum(component_numbers) > test_value or mul(component_numbers) < test_value:
-            #continue
-
         if is_possible(component_numbers, test_value):
             total += test_value
     return total 

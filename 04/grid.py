@@ -1,4 +1,5 @@
 from collections import namedtuple
+from functools import cache
 from typing import Iterable
 
 class Vector(namedtuple("Vector", ["i", "j"])):
@@ -9,22 +10,26 @@ class Vector(namedtuple("Vector", ["i", "j"])):
     """
     def __add__(self, other:"Vector"):
         # Could almost certainly optimize this
-        return Vector(self.i + other.i, self.j + other.j)
+        return get_vector(self.i + other.i, self.j + other.j)
 
     def __mul__(self, other:int):
         """
         Scalar multiplication, not dot product.
         """
-        return Vector(self.i * other, self.j * other)
+        return get_vector(self.i * other, self.j * other)
 
-NORTH = Vector(-1,0)
-NORTH_EAST = Vector(-1,1)
-EAST = Vector(0,1)
-SOUTH_EAST = Vector(1,1)
-SOUTH = Vector(1,0)
-SOUTH_WEST = Vector(1,-1)
-WEST = Vector(0,-1)
-NORTH_WEST = Vector(-1,-1)
+@cache
+def get_vector(i:int, j:int) -> Vector:
+    return Vector(i,j)
+
+NORTH = get_vector(-1,0)
+NORTH_EAST = get_vector(-1,1)
+EAST = get_vector(0,1)
+SOUTH_EAST = get_vector(1,1)
+SOUTH = get_vector(1,0)
+SOUTH_WEST = get_vector(1,-1)
+WEST = get_vector(0,-1)
+NORTH_WEST = get_vector(-1,-1)
 
 ALL_DIRECTION_VECTORS = [
     NORTH,
@@ -70,5 +75,5 @@ def grid_from_input_txt(ascii_grid:str, out_of_bounds=".") -> Grid:
     grid = Grid(out_of_bounds)
     for i, row in enumerate(ascii_grid.split("\n")):
         for j, cell in enumerate(row):
-            grid.grid[Vector(i,j)] = cell
+            grid.grid[get_vector(i,j)] = cell
     return grid

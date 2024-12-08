@@ -14,6 +14,9 @@ class Vector(namedtuple("Vector", ["i", "j"])):
         # Could almost certainly optimize this
         return get_vector(self.i + other.i, self.j + other.j)
 
+    def __sub__(self, other: "Vector"):
+        return get_vector(self.i - other.i, self.j - other.j)
+
     def __mul__(self, other: int):
         """
         Scalar multiplication, not dot product.

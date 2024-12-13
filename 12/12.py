@@ -4,6 +4,7 @@ from rich import print
 
 from grid import Grid, Vector, grid_from_input_txt, NORTH, EAST, SOUTH, WEST
 
+
 def get_puzzle_input(use_example=False):
     input_filename = "example.txt" if use_example else "input.txt"
     puzzle_input = None
@@ -11,11 +12,14 @@ def get_puzzle_input(use_example=False):
         puzzle_input = grid_from_input_txt(input_txt.read(), out_of_bounds=".")
     return puzzle_input
 
-def score_region(grid:Grid, region_grid:Grid, location:Vector) -> tuple[int,int,Set[Vector]]:
+
+def score_region(
+    grid: Grid, region_grid: Grid, location: Vector
+) -> tuple[int, int, Set[Vector]]:
     """Returns a tuple of (area, perimeter)"""
     # Region grid is like a "seen" set.
     if region_grid[location] != ".":
-        return (0,0,set())
+        return (0, 0, set())
 
     region_grid[location] = "X"
 
@@ -25,7 +29,9 @@ def score_region(grid:Grid, region_grid:Grid, location:Vector) -> tuple[int,int,
     for direction in [NORTH, EAST, SOUTH, WEST]:
         new_location = location + direction
         if grid[new_location] == grid[location]:
-            downstream_area, downstream_perimeter, downstream_membership = score_region(grid, region_grid, new_location)
+            downstream_area, downstream_perimeter, downstream_membership = score_region(
+                grid, region_grid, new_location
+            )
             area += downstream_area
             perimeter += downstream_perimeter
             membership.update(downstream_membership)
@@ -35,19 +41,20 @@ def score_region(grid:Grid, region_grid:Grid, location:Vector) -> tuple[int,int,
     return (area, perimeter, membership)
 
 
-def solve_part_1(grid:Grid):
+def solve_part_1(grid: Grid):
     region_grid = Grid(out_of_bounds=".")
     score = 0
     for location in grid.all_locations():
         if region_grid[location] != ".":
             continue
 
-        area, permimeter, region_locations = score_region(grid, region_grid, location)
+        area, permimeter, _ = score_region(grid, region_grid, location)
         score += area * permimeter
 
     return score
 
-def count_sides(region_locations:Set[Vector]) -> int:
+
+def count_sides(region_locations: Set[Vector]) -> int:
     segments = set()
     for location in region_locations:
         for direction in [NORTH, EAST, SOUTH, WEST]:
@@ -83,17 +90,19 @@ def count_sides(region_locations:Set[Vector]) -> int:
         side_count += 1
     return side_count
 
-def solve_part_2(grid:Grid):
+
+def solve_part_2(grid: Grid):
     region_grid = Grid(out_of_bounds=".")
     score = 0
     for location in grid.all_locations():
         if region_grid[location] != ".":
             continue
 
-        area, permimeter, region_locations = score_region(grid, region_grid, location)
+        area, _, region_locations = score_region(grid, region_grid, location)
         score += area * count_sides(region_locations)
 
     return score
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

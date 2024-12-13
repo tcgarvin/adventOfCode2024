@@ -20,10 +20,32 @@ def get_puzzle_input(use_example=False):
             puzzle_input.append(MachineInfo(*map(int, match.groups())))
     return puzzle_input
 
+def cheapest_win(machine: MachineInfo) -> int:
+    success_pairs = []
+    for a_pushes in range(0, 101):
+        for b_pushes in range(0, 101):
+            if (
+                a_pushes * machine.ax + b_pushes * machine.bx == machine.px 
+                and a_pushes * machine.ay + b_pushes * machine.by == machine.py
+            ):
+                success_pairs.append((a_pushes, b_pushes))
+
+    if len(success_pairs) == 0:
+        return 0
+
+    cheapest_win = 400 # 100 * 3 + 100 * 1
+    for a_pushes, b_pushes in success_pairs:
+        cheapest_win = min(cheapest_win, a_pushes * 3 + b_pushes)
+
+    return cheapest_win
+
+
 def solve_part_1(machines: list[MachineInfo]):
+    total_min_cost = 0
     for machine in machines:
-        print(machine)
-    return ""
+        total_min_cost += cheapest_win(machine)
+
+    return total_min_cost
 
 def solve_part_2(puzzle_input):
     return ""

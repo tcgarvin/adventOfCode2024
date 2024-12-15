@@ -1,5 +1,6 @@
 from collections import namedtuple
 from functools import cache
+import math
 from typing import Iterable
 
 
@@ -10,18 +11,35 @@ class Vector(namedtuple("Vector", ["i", "j"])):
     first character.
     """
 
-    def __add__(self, other: "Vector"):
+    @classmethod
+    def dot(cls, a: "Vector", b: "Vector") -> int:
+        return a.i * b.i + a.j * b.j
+
+    def __add__(self, other: "Vector") -> "Vector":
         # Could almost certainly optimize this
         return get_vector(self.i + other.i, self.j + other.j)
 
-    def __sub__(self, other: "Vector"):
+    def __sub__(self, other: "Vector") -> "Vector":
         return get_vector(self.i - other.i, self.j - other.j)
 
-    def __mul__(self, other: int):
+    def __mul__(self, other: int) -> "Vector":
         """
         Scalar multiplication, not dot product.
         """
         return get_vector(self.i * other, self.j * other)
+
+    def __div__(self, other: int) -> "Vector":
+        """
+        Scalar division
+        """
+        return get_vector(self.i / other, self.j / other)
+
+    def __abs__(self) -> float:
+        """Magnitude"""
+        return math.sqrt(self.i ** 2 + self.j ** 2)
+
+    def unit(self) -> "Vector":
+        return get_vector(self.i / abs(self), self.j / abs(self))
 
 
 @cache

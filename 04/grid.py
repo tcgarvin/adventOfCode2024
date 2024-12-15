@@ -104,3 +104,18 @@ def grid_from_input_txt(ascii_grid: str, out_of_bounds=".") -> Grid:
         for j, cell in enumerate(row):
             grid.grid[get_vector(i, j)] = cell
     return grid
+
+def print_grid(grid:Grid):
+    """
+    Print a grid.  This is a little more complicated than it could be because
+    we have to find the bounds of the grid.
+    """
+    min_i = min_j = max_i = max_j = 0
+    for location in grid.all_locations():
+        max_i = max(max_i, location.i)
+        max_j = max(max_j, location.j)
+
+    for i in range(min_i, max_i + 1):
+        for j in range(min_j, max_j + 1):
+            print(grid[get_vector(i, j)], end="")
+        print()

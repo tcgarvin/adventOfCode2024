@@ -91,7 +91,9 @@ class Grid:
 
     def find_one(self, value) -> Vector:
         found_locations = list(self.find(value))
-        assert len(found_locations) == 1
+        if len(found_locations) != 1:
+            print(found_locations)
+            raise Exception("Expected to find one location")
         return found_locations[0]
 
 

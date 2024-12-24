@@ -56,6 +56,8 @@ SOUTH_WEST = get_vector(1, -1)
 WEST = get_vector(0, -1)
 NORTH_WEST = get_vector(-1, -1)
 
+CARDINAL_DIRECTIONS = [NORTH, EAST, SOUTH, WEST]
+
 ALL_DIRECTION_VECTORS = [
     NORTH,
     NORTH_EAST,
@@ -66,6 +68,15 @@ ALL_DIRECTION_VECTORS = [
     WEST,
     NORTH_WEST,
 ]
+
+def turn_90(direction:Vector, clockwise:int) -> Vector:
+    return CARDINAL_DIRECTIONS[(CARDINAL_DIRECTIONS.index(direction) + 1 * clockwise) % 4]
+
+def turn_left(direction:Vector) -> Vector:
+    return turn_90(direction, -1)
+
+def turn_right(direction:Vector) -> Vector:
+    return turn_90(direction, 1)
 
 
 class Grid:

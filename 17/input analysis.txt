@@ -1,0 +1,23 @@
+Register A: 24847151
+Register B: 0
+Register C: 0
+
+Program: 2,4,1,5,7,5,1,6,0,3,4,0,5,5,3,0
+
+bst A % 8  -> B     
+bxl B ^ 5  -> B     (B = (A % 8) ^ 5)
+cdv A >> B -> C     (C = A >> (A % 8) ^ 5)
+bxl B ^ 6  -> B     (B = (A % 8) ^ 5 ^ 6) = (A % 8) ^ 3
+adv A >> 3 -> A     A = A >> 3   # Always shift 3
+bxc B ^ C  -> B     B = ((A % 8) ^ 3) ^ (A >> ((A % 8) ^ 5))
+out B % 8  -> out   out = ((A % 8) ^ 3 ^ (A >> ((A % 8) ^ 5))) % 8
+jnz A ------> 0
+
+There are 16 numbers in the program, so we need to output 16 times.  That means
+that jnz must hit after 15 times, which means after 15 3-bit shifts.  So we need
+at least 45 + 1 bits.
+
+Maybe we can build this from the MSB instead of the LSB. Could be a regression.
+Find the smallest number that can make 2, then see what the smallest 4 would be
+after that, then the smallest 1, etc.
+

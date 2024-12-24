@@ -166,6 +166,7 @@ def _find_smallest_a(a_prefix:int, target_program: list[int]) -> int:
         a = (a_prefix << 3) + candidate_extension
         _, out = one_loop(a)
         if out == target:
+            print(f"{a:b}")
             smallest_a = _find_smallest_a(a, target_program[:-1])
             if smallest_a != -1:
                 break

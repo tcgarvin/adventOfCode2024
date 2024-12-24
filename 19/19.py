@@ -21,7 +21,7 @@ def solve_pattern(pattern, towels) -> list[str]:
     for towel in towels:
         if towel == pattern:
             return [towel]
-            
+
         if is_compatable(towel, pattern):
             sub_towels = solve_pattern(pattern[len(towel):], towels)
             if len(sub_towels) > 0:
@@ -42,8 +42,29 @@ def solve_part_1(towels, patterns):
 
     return solvable_patterns
 
+def _get_solver(towels):
+
+    @cache
+    def solver(pattern) -> int:
+        if len(pattern) == 0:
+            return 1
+
+        answer = 0
+        for towel in towels:
+            if is_compatable(towel, pattern):
+                answer += solver(pattern[len(towel):])
+
+        return answer
+
+    return solver
+
 def solve_part_2(towels, patterns):
-    return ""
+    design_count = 0
+    for pattern in track(patterns):
+        solver = _get_solver(towels)
+        answer = solver(pattern)
+        design_count += answer
+    return design_count
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

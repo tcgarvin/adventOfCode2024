@@ -1,0 +1,30 @@
+029A: <vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A
+980A: <v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A
+179A: <v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
+456A: <v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A
+379A: <v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
+
+
+Code: 029A
+Remote 1: <A^A^^>AvvvA
+example1: <A^A>^^AvvvA
+Remote 2: v<<A>>^A<A>A<AAv>A^Av<AAA>^A
+example2: v<<A>>^A<A>AvA<^AA>A<vAAA>^A
+Remote 3: v<A<AA>>^AvAA^<A>Av<<A>>^AvA^Av<<A>>^AAv<A>A^A<A>Av<A<A>>^AAAvA^<A>A
+example3: <vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A
+
+Code: 379A
+remote 2: <A>A<AAv<AA>>^AvAA^Av<AAA>^A
+remote 3: v<<A>>^AvA^Av<<A>>^AAv<A<A>>^AAvAA^<A>Av<A>^AA<A>Av<A<A>>^AAAvA^<A>A
+
+Code:                3                      7          9                 A
+example1:        ^   A         <<      ^^   A     >>   A        vvv      A 
+example2:    <   A > A  v <<   AA >  ^ AA > A  v  AA ^ A   < v  AAA >  ^ A   
+example3: <v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
+
+Code:                3                          7          9                 A
+remote 1:        ^   A       ^^        <<       A     >>   A        vvv      A
+remote 2:    <   A > A   <   AA  v <   AA >>  ^ A  v  AA ^ A  v <   AAA >  ^ A
+remote 3: v<<A>>^AvA^Av<<A>>^AAv<A<A>>^AAvAA^<A>Av<A>^AA<A>Av<A<A>>^AAAvA^<A>A
+
+

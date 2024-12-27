@@ -85,10 +85,10 @@ def plan_code(code: str, grid: Grid, sub_levels=0):
             best_char_sub_plan_length = 500
             for candidate_char_plan in permutations(char_steps, len(char_steps)):
                 valid = True
-                location = start_location
+                candidate_location = start_location
                 for step in candidate_char_plan:
-                    location += step
-                    if grid[location] == " ":
+                    candidate_location += step
+                    if grid[candidate_location] == " ":
                         valid = False
                         break
                 if not valid:
@@ -104,6 +104,8 @@ def plan_code(code: str, grid: Grid, sub_levels=0):
                 if char_sub_plan_length < best_char_sub_plan_length:
                     best_char_sub_plan_length = char_sub_plan_length
                     char_plan = candidate_char_plan
+
+            assert char_plan != ""
 
         plan += char_plan
         best_sub_plan_length += best_char_sub_plan_length

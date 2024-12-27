@@ -1,5 +1,7 @@
 import argparse
+from functools import cache
 from itertools import permutations
+from math import inf
 from rich import print
 
 from grid import (
@@ -59,9 +61,12 @@ STEP_CODE_MAP = {
     WEST: "<",
 }
 
+@cache
+def plan_remote_code(code: str, sub_levels=0):
+    return plan_code(code, get_remote_control(), sub_levels=sub_levels)
+
 
 def plan_code(code: str, grid: Grid, sub_levels=0):
-    candidate_remote_control = get_remote_control()
     plan = ""
     best_sub_plan_length = 0
     start_location = grid.find_one("A")
@@ -82,7 +87,7 @@ def plan_code(code: str, grid: Grid, sub_levels=0):
 
         else:
             char_plan = ""
-            best_char_sub_plan_length = 500
+            best_char_sub_plan_length = inf
             for candidate_char_plan in permutations(char_steps, len(char_steps)):
                 valid = True
                 candidate_location = start_location
@@ -96,9 +101,8 @@ def plan_code(code: str, grid: Grid, sub_levels=0):
                 candidate_char_plan = (
                     "".join(STEP_CODE_MAP[step] for step in candidate_char_plan) + "A"
                 )
-                _, char_sub_plan_length = plan_code(
+                _, char_sub_plan_length = plan_remote_code(
                     candidate_char_plan,
-                    candidate_remote_control,
                     sub_levels=sub_levels - 1,
                 )
                 if char_sub_plan_length < best_char_sub_plan_length:
@@ -114,32 +118,35 @@ def plan_code(code: str, grid: Grid, sub_levels=0):
     return plan, best_sub_plan_length
 
 
-def solve_code_1(code):
+def solve_code(code, remotes = 3) -> int:
     keypad = get_keypad()
-    remote = get_remote_control()
+    #remote = get_remote_control()
 
-    print(f"Code: {code}")
-    remote1_code, _ = plan_code(code, keypad, sub_levels=2)
-    print(f"Remote 1: {remote1_code}")
-    remote2_code, _ = plan_code(remote1_code, remote, sub_levels=1)
-    print(f"Remote 2: {remote2_code}")
-    remote3_code, _ = plan_code(remote2_code, remote, sub_levels=0)
-    print(f"Remote 3: {remote3_code}")
-    return remote3_code
+    #print(f"Code: {code}")
+    remote_code, total_code_length = plan_code(code, keypad, sub_levels=remotes - 1)
+    # print(f"Remote 0: {remote_code}")
+    # for i in range(1, remotes):
+    #     remote_code, _ = plan_code(remote_code, remote, sub_levels=remotes - i - 1)
+    #     print(f"Remote {i}: {remote_code}")
+    return total_code_length
 
 
 def solve_part_1(puzzle_input):
     complexity_sum = 0
     for code in puzzle_input:
-        plan = solve_code_1(code)
-        print(f"{code}: len(plan) * int(code[:-1]): {len(plan)} * {int(code[:-1])}")
-        complexity_sum += len(plan) * int(code[:-1])
+        total_code_length = solve_code(code, remotes=3)
+        print(f"{code}: len(plan) * int(code[:-1]): {total_code_length} * {int(code[:-1])}")
 
     return complexity_sum
 
 
 def solve_part_2(puzzle_input):
-    return ""
+    complexity_sum = 0
+    for code in puzzle_input:
+        total_code_length = solve_code(code, remotes=26)
+        print(f"{code}: len(plan) * int(code[:-1]): {total_code_length} * {int(code[:-1])}")
+        complexity_sum += total_code_length * int(code[:-1])
+    return complexity_sum
 
 
 if __name__ == "__main__":

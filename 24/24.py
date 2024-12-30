@@ -1,10 +1,28 @@
 import argparse
+from dataclasses import dataclass
 from itertools import combinations
 from math import comb
 from rich import print
 from typing import NamedTuple
 
-Gate = NamedTuple("Gate", [("input1", str), ("gate", str), ("input2", str), ("output", str)])   
+#Gate = NamedTuple("Gate", [("input1", str), ("gate", str), ("input2", str), ("output", str)])   
+
+@dataclass
+class Wire:
+    name: str
+
+_all_wires = {}
+def get_wire(name:str) -> Wire:
+    if name not in _all_wires:
+        _all_wires[name] = Wire(name)
+    return _all_wires[name]
+
+@dataclass
+class Gate:
+    input1: Wire
+    gate: str
+    input2: Wire
+    output: Wire
 
 def get_puzzle_input(use_example=False):
     input_filename = "example.txt" if use_example else "input.txt"
@@ -18,7 +36,12 @@ def get_puzzle_input(use_example=False):
 
             elif "->" in line:
                 input1, gate, input2, _, output = line.strip().split()
-                gates.append(Gate(input1, gate, input2, output))
+                gates.append(Gate(
+                    get_wire(input1), 
+                    gate, 
+                    get_wire(input2), 
+                    get_wire(output))
+                )
     return values, gates
 
 def run_logic_xy(x:int, y:int, bits:int, gates:list[Gate]) -> int:
@@ -35,15 +58,20 @@ def run_logic(values:dict[str,int], gates:list[Gate]) -> int:
     remaining_gates = gates.copy()
     while len(remaining_gates) > 0:
         for gate in remaining_gates.copy():
-            if gate.input1 in values and gate.input2 in values:
+            name1 = gate.input1.name
+            name2 = gate.input2.name
+            if name1 in values and name2 in values:
+                in_value_1 = values[name1]
+                in_value_2 = values[name2]
                 if gate.gate == "AND":
-                    values[gate.output] = values[gate.input1] & values[gate.input2]
+                    output_value = in_value_1 & in_value_2
                 elif gate.gate == "OR":
-                    values[gate.output] = values[gate.input1] | values[gate.input2]
+                    output_value = in_value_1 | in_value_2
                 elif gate.gate == "XOR":
-                    values[gate.output] = values[gate.input1] ^ values[gate.input2]
+                    output_value = in_value_1 ^ in_value_2
                 else:
                     raise Exception(f"Unknown gate: {gate.gate}")
+                values[gate.output.name] = output_value
                 remaining_gates.remove(gate)
 
     result = 0
@@ -56,34 +84,50 @@ def run_logic(values:dict[str,int], gates:list[Gate]) -> int:
 def solve_part_1(values:dict[str,int], gates:list[Gate]) -> int:
     return run_logic(values, gates)
 
-def get_test_pair_sets(gate_indexes:list[int], layers=4):
-    test_pair_sets = set()
-    for pair in combinations(gate_indexes, 2):
-        pair = tuple(pair)
-        if layers > 1:
-            sub_indexes = gate_indexes.copy()
-            sub_indexes.remove(pair[0])
-            sub_indexes.remove(pair[1])
-            sub_test_sets = get_test_pair_sets(sub_indexes, layers=layers-1)
-
-            for sub_test_set in sub_test_sets:
-                unsorted_test_pair_set = [pair]
-                unsorted_test_pair_set.extend(sub_test_set)
-                test_pair_set = tuple(unsorted_test_pair_set)
-                test_pair_sets.add(test_pair_set)
-
-        else:
-            test_pair_sets.add((pair,))
-
-    return list(test_pair_sets)
-    
-
 def solve_part_2(values, gates):
-    vlen = len(gates)
-    print(comb(vlen, 2) * comb(vlen-2,2) * comb(vlen-4,2) * comb(vlen-6,2))
 
-    gate_indexes = [i for i in range(len(gates))]
-    print(len(get_test_pair_sets(gate_indexes)))
+    # Swap z12 with kth
+    for gate in gates:
+        if gate.output.name == "z12":
+            gate.output.name = "kth"
+        elif gate.output.name == "kth":
+            gate.output.name = "z12"
+
+
+    for _ in range(50):
+        for i,gate in enumerate(gates):
+            if set([gate.input1.name[0], gate.input2.name[0]]) == set("xy"):
+                number = gate.input1.name[1:]
+                if gate.gate == "XOR":
+                    gate.output.name = f"xor{number}"
+                elif gate.gate == "AND":
+                    gate.output.name = f"and{number}"
+
+        for i, gate in enumerate(gates):
+            pair_names = set([gate.input1.name[:3], gate.input2.name[:3]])
+            if (pair_names == set(["xor", "and"]) or pair_names == set(["ofb", "xor"])) and gate.gate == "AND":
+                numa = int(gate.input1.name[3:])
+                numb = int(gate.input2.name[3:])
+                level = max(numa, numb)
+                if abs(numa - numb) != 1:
+                    raise Exception("Found an issue?")
+                else:
+                    gate.output.name = f"ofa{level:02}"
+
+        for i, gate in enumerate(gates):
+            if set([gate.input1.name[:3], gate.input2.name[:3]]) == set(["ofa", "and"]) and gate.gate == "OR":
+                numa = int(gate.input1.name[3:])
+                numb = int(gate.input2.name[3:])
+                level = max(numa, numb)
+                if abs(numa - numb) != 0:
+                    raise Exception("Found an issue?")
+                else:
+                    gate.output.name = f"ofb{level:02}"
+
+    with open("analysis.txt", "w") as analysis:
+        for gate in gates:
+            analysis.write("\t".join([gate.input1.name, gate.gate, gate.input2.name, gate.output.name]) + "\n")
+
     return ""
 
 if __name__ == "__main__":

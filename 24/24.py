@@ -86,12 +86,23 @@ def solve_part_1(values:dict[str,int], gates:list[Gate]) -> int:
 
 def solve_part_2(values, gates):
 
-    # Swap z12 with kth
     for gate in gates:
+        # Swap z12 with kth
         if gate.output.name == "z12":
-            gate.output.name = "kth"
+            gate.output = get_wire("kth")
         elif gate.output.name == "kth":
-            gate.output.name = "z12"
+            gate.output = get_wire("z12")
+        # Swap z26 with gsd
+        elif gate.output.name == "z26":
+            gate.output = get_wire("gsd")
+        elif gate.output.name == "gsd":
+            gate.output = get_wire("z26")
+
+        # Swap z32 with tbt
+        elif gate.output.name == "z32":
+            gate.output = get_wire("tbt")
+        elif gate.output.name == "tbt":
+            gate.output = get_wire("z32")
 
 
     for _ in range(50):

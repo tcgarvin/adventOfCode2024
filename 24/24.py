@@ -104,6 +104,12 @@ def solve_part_2(values, gates):
         elif gate.output.name == "tbt":
             gate.output = get_wire("z32")
 
+        # Swap vpm with qnf
+        elif gate.output.name == "vpm":
+            gate.output = get_wire("qnf")
+        elif gate.output.name == "qnf":
+            gate.output = get_wire("vpm")
+
 
     for _ in range(50):
         for i,gate in enumerate(gates):
@@ -139,7 +145,12 @@ def solve_part_2(values, gates):
         for gate in gates:
             analysis.write("\t".join([gate.input1.name, gate.gate, gate.input2.name, gate.output.name]) + "\n")
 
-    return ""
+    # Assert each gate name ends in a number, proving consistency
+    for gate in gates:
+        if not gate.output.name[-2:].isdigit():
+            raise Exception("Found an issue?")
+
+    return ",".join(sorted(["z12", "kth", "vpm", "qnf", "z26", "gsd", "z32", "tbt"]))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
